@@ -174,34 +174,36 @@
                 sendMessage();
             }
         }
-
         async function sendMessage() {
             let userMessage = document.getElementById("userInput").value.trim();
             if (!userMessage) {
                 alert("Please enter a question.");
                 return;
             }
-
+        
             let chatbox = document.getElementById("chatbox");
             chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
             document.getElementById("userInput").value = "";
             chatbox.scrollTop = chatbox.scrollHeight;
-
+        
             try {
-                let response = await fetch("https://c787-34-57-66-18.ngrok-free.app/chat", {
+                let response = await fetch("https://c787-34-57-66-18.ngrok-free.app/chat", { // Change this to your ngrok URL when deployed
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: userMessage })
                 });
-
+        
                 let result = await response.json();
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> ${result.response}</div>`;
+                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> ${result.reply}</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             } catch (error) {
                 chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server.</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             }
-        }
+        }    
+
+        
+        
     </script>
 </body>
 </html>
