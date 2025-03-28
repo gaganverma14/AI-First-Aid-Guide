@@ -1,4 +1,5 @@
+torch
 flask
 flask-cors
-gpt4all
-requests
+pyngrok
+google-generativeai
