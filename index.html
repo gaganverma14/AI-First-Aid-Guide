@@ -97,7 +97,7 @@
         }
     </style>
 
-    <!-- Add marked.js library for parsing markdown to HTML -->
+    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
@@ -111,7 +111,7 @@
     </div>
 
     <script>
-        const NGROK_URL = "https://89a2-34-71-120-24.ngrok-free.app"; // Replace with actual ngrok URL
+        const NGROK_URL = "https://73ec-34-71-120-24.ngrok-free.app"; // Replace with actual ngrok URL
 
         function handleKeyPress(event) {
             if (event.key === "Enter") {
@@ -141,7 +141,7 @@
                 let result = await response.json();
                 let replyText = result.reply || "⚠️ Sorry, I couldn't generate a response.";
 
-                // Convert Markdown to HTML using marked.js
+            
                 chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b><br>${marked.parse(replyText)}</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             } catch (error) {
