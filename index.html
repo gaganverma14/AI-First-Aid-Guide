@@ -50,6 +50,8 @@
             -webkit-backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
         }
         .message {
             margin: 10px 0;
@@ -59,17 +61,20 @@
             font-size: 15px;
             line-height: 1.5;
             position: relative;
+            animation: slideIn 0.5s ease-out forwards;
         }
         .user-message {
             align-self: flex-end;
             background: #007ea7;
-            color: white;
+            color: black;
+            animation-delay: 0.3s;
         }
         .bot-message {
             align-self: flex-start;
             background: rgba(255, 255, 255, 0.2);
-            color: #f0f0f0;
+            color: black;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            animation-delay: 0.5s;
         }
         .chat-input {
             display: flex;
@@ -95,6 +100,26 @@
             padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
+        }
+
+        /* Animation for slide-in effect */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        /* Animation for fading in chatbox */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
     </style>
 
