@@ -1,185 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediBot</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediBot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow: hidden;
-        }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow: hidden;
+    }
 
-        .chat-container {
-            width: 100%;
-            max-width: 550px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            animation: fadeIn 1.2s ease;
-        }
+    .chat-container {
+      width: 100%;
+      max-width: 550px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      animation: fadeIn 1s ease-in-out;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .chat-header {
-            background: rgba(0, 86, 112, 0.8);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: normal;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    .chat-header {
+      background: linear-gradient(90deg, #007ea7, #00b4d8);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      letter-spacing: 1px;
+    }
 
-        .chatbox {
-            padding: 20px;
-            height: 400px;
-            overflow-y: auto;
-            background: rgba(247, 249, 250, 0.25);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            display: flex;
-            flex-direction: column;
-            scroll-behavior: smooth;
-        }
+    .chatbox {
+      padding: 20px;
+      height: 400px;
+      overflow-y: auto;
+      background: rgba(247, 249, 250, 0.3);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
 
-        .message {
-            margin: 10px 0;
-            padding: 12px 16px;
-            border-radius: 10px;
-            max-width: 80%;
-            font-size: 15px;
-            line-height: 1.5;
-            position: relative;
-            animation: slideIn 0.4s ease;
-        }
+    .message {
+      margin: 10px 0;
+      padding: 12px 16px;
+      border-radius: 12px;
+      max-width: 80%;
+      font-size: 15px;
+      line-height: 1.5;
+      position: relative;
+      animation: slideIn 0.4s ease;
+    }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .user-message {
-            align-self: flex-end;
-            background: rgba(0, 126, 167, 0.85);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(145deg, #00b4d8, #007ea7);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+    }
 
-        .bot-message {
-            align-self: flex-start;
-            background: rgba(255, 255, 255, 0.6);
-            color: #333;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
+    .bot-message {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.8);
+      color: #333;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
 
-        .chat-input {
-            display: flex;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.3);
-            padding: 10px;
-            backdrop-filter: blur(5px);
-        }
+    .chat-input {
+      display: flex;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.4);
+      padding: 10px;
+      backdrop-filter: blur(6px);
+    }
 
-        .chat-input input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ccd6dd;
-            border-radius: 10px;
-            font-size: 15px;
-            outline: none;
-            margin-right: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            transition: border-color 0.3s;
-        }
+    .chat-input input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ccd6dd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      margin-right: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      transition: border 0.3s, box-shadow 0.3s;
+    }
 
-        .chat-input input:focus {
-            border-color: #007ea7;
-        }
+    .chat-input input:focus {
+      border-color: #00b4d8;
+      box-shadow: 0 0 5px rgba(0, 180, 216, 0.3);
+    }
 
-        .chat-input button {
-            background: #005670;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    .chat-input button {
+      background: linear-gradient(145deg, #007ea7, #023e8a);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+    }
 
-        .chat-input button:hover {
-            background: #007ea7;
-        }
-    </style>
+    .chat-input button:hover {
+      background: linear-gradient(145deg, #0096c7, #0077b6);
+    }
+
+    .chat-input button:active {
+      transform: scale(0.98);
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">MediBot - Your AI Health Assistant</div>
-        <div class="chatbox" id="chatbox"></div>
-        <div class="chat-input">
-            <input type="text" id="userInput" placeholder="Ask a medical question..." onkeypress="handleKeyPress(event)"/>
-            <button onclick="sendMessage()">Send</button>
-        </div>
+  <div class="chat-container">
+    <div class="chat-header">MediBot - Your AI Health Assistant</div>
+    <div class="chatbox" id="chatbox"></div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Ask a medical question..." onkeypress="handleKeyPress(event)" />
+      <button onclick="sendMessage()">Send</button>
     </div>
+  </div>
 
-    <script>
-        const NGROK_URL = "https://c323-35-193-104-31.ngrok-free.app"; // Replace with actual ngrok URL
+  <script>
+    const NGROK_URL = "https://c323-35-193-104-31.ngrok-free.app"; // Replace with actual ngrok URL
 
-        function handleKeyPress(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        }
+    function handleKeyPress(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    }
 
-        async function sendMessage() {
-            let userMessage = document.getElementById("userInput").value.trim();
-            if (!userMessage) {
-                alert("Please enter a question.");
-                return;
-            }
+    async function sendMessage() {
+      let userMessage = document.getElementById("userInput").value.trim();
+      if (!userMessage) {
+        alert("Please enter a question.");
+        return;
+      }
 
-            let chatbox = document.getElementById("chatbox");
-            chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
-            document.getElementById("userInput").value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
+      let chatbox = document.getElementById("chatbox");
+      chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
+      document.getElementById("userInput").value = "";
+      chatbox.scrollTop = chatbox.scrollHeight;
 
-            try {
-                let response = await fetch(`${NGROK_URL}/chat`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: userMessage })
-                });
+      try {
+        let response = await fetch(`${NGROK_URL}/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userMessage })
+        });
 
-                let result = await response.json();
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> ${result.reply}</div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            } catch (error) {
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server.</div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            }
-        }
-    </script>
+        let result = await response.json();
+        chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> ${result.reply}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      } catch (error) {
+        chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server.</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      }
+    }
+  </script>
 </body>
 </html>
