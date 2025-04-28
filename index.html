@@ -82,9 +82,52 @@
         }
         .bot-message b {
             color: #0277bd;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
         }
         .user-message b {
             color: #e0f7fa;
+        }
+        .bot-message ul, .bot-message ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .bot-message li {
+            margin-bottom: 5px;
+        }
+        .bot-message p strong {
+            display: block;
+            color: #d32f2f;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .bot-message {
+            white-space: pre-line;
+        }
+        .bot-message p {
+            margin-bottom: 10px;
+        }
+        .bot-message-formatted ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .bot-message-formatted li {
+            margin-bottom: 5px;
+        }
+        .bot-message-formatted .warning-section {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-left: 4px solid #d32f2f;
+            border-radius: 4px;
+        }
+        .bot-message-formatted .warning-title {
+            color: #d32f2f;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
         .typing-indicator {
             align-self: flex-start;
@@ -181,7 +224,6 @@
             background: #b3e5fc;
             transform: translateY(-2px);
         }
-        /* Custom scrollbar */
         .chatbox::-webkit-scrollbar {
             width: 8px;
         }
@@ -226,7 +268,7 @@
     </div>
 
     <script>
-        const NGROK_URL = "https://5435-210-89-61-37.ngrok-free.app"; 
+        const NGROK_URL = "https://af3b-125-16-189-247.ngrok-free.app"; 
 
         function handleKeyPress(event) {
             if (event.key === "Enter") {
@@ -248,14 +290,14 @@
 
             let chatbox = document.getElementById("chatbox");
             if (document.querySelector('.welcome-message')) {
-                chatbox.innerHTML = ''; // Clear welcome message when first message is sent
+                chatbox.innerHTML = ''; 
             }
             
             chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
             document.getElementById("userInput").value = "";
             chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Show typing indicator
+            
             document.getElementById('typingIndicator').style.display = 'block';
 
             try {
@@ -267,18 +309,71 @@
 
                 let result = await response.json();
                 
-                // Hide typing indicator
                 document.getElementById('typingIndicator').style.display = 'none';
                 
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> ${result.reply}</div>`;
+                let formattedReply = formatBotResponse(result.reply);
+                
+                chatbox.innerHTML += `<div class="message bot-message bot-message-formatted"><b>MediBot:</b> ${formattedReply}</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             } catch (error) {
-                // Hide typing indicator
                 document.getElementById('typingIndicator').style.display = 'none';
                 
                 chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server. Please try again later.</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             }
+        }
+
+        function formatBotResponse(text) {
+            let formattedText = text;
+            
+            if (formattedText.includes('* ') || formattedText.includes('- ')) {
+                let lines = formattedText.split('\n');
+                let inList = false;
+                let result = '';
+                
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    
+                    if (line.startsWith('* ') || line.startsWith('- ')) {
+                        if (!inList) {
+                            result += '<ul>';
+                            inList = true;
+                        }
+                        
+                        result += '<li>' + line.substring(2) + '</li>';
+                    } 
+                    else if (line.toLowerCase().includes('seek') && (line.toLowerCase().includes('medical') || line.toLowerCase().includes('attention'))) {
+                        if (inList) {
+                            result += '</ul>';
+                            inList = false;
+                        }
+                        
+                        result += '<div class="warning-section"><div class="warning-title">' + line + '</div>';
+                    }
+                    else {
+                        if (inList) {
+                            result += '</ul>';
+                            inList = false;
+                        }
+                        
+                        if (line) {
+                            result += '<p>' + line + '</p>';
+                        }
+                    }
+                }
+                
+                if (inList) {
+                    result += '</ul>';
+                }
+                
+                if (result.includes('<div class="warning-section">') && !result.includes('</div></div>')) {
+                    result += '</div>';
+                }
+                
+                formattedText = result;
+            }
+            
+            return formattedText;
         }
     </script>
 </body>
