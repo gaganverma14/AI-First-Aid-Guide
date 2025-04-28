@@ -140,9 +140,6 @@
             border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             transition: all 0.2s ease;
         }
         .chat-input button:hover {
@@ -224,7 +221,7 @@
         </div>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Ask me a medical question..." onkeypress="handleKeyPress(event)"/>
-            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
