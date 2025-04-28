@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediBot</title>
+    <title>MediBot - Your AI Health Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -11,8 +12,8 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%);
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(120deg, #e0f7fa 0%, #b2ebf2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,101 +23,223 @@
         .chat-container {
             width: 100%;
             max-width: 550px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 86, 112, 0.15);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            transition: all 0.3s ease;
         }
         .chat-header {
-            background: #005670;
+            background: linear-gradient(90deg, #0277bd 0%, #00838f 100%);
             color: white;
             padding: 20px;
             text-align: center;
-            font-size: 22px;
-            font-weight: normal;
-            border-bottom: 3px solid #e6ecef;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .chatbox {
             padding: 20px;
             height: 400px;
             overflow-y: auto;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: #f8fdff;
             display: flex;
             flex-direction: column;
+            scroll-behavior: smooth;
         }
         .message {
             margin: 10px 0;
-            padding: 12px 16px;
-            border-radius: 8px;
-            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            max-width: 85%;
             font-size: 15px;
             line-height: 1.5;
             position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .user-message {
             align-self: flex-end;
-            background: #74aec2;
-            color: black;
+            background: linear-gradient(135deg, #007ea7 0%, #0091ad 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
         }
         .bot-message {
             align-self: flex-start;
-            background: white;
-            color: black;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: #ffffff;
+            color: #333;
+            border: 1px solid #e0f7fa;
+            border-bottom-left-radius: 4px;
+        }
+        .bot-message b {
+            color: #0277bd;
+        }
+        .user-message b {
+            color: #e0f7fa;
+        }
+        .typing-indicator {
+            align-self: flex-start;
+            background: #ffffff;
+            color: #555;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .typing-indicator span {
+            display: inline-block;
+            animation: blink 1.4s infinite both;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
         }
         .chat-input {
             display: flex;
-            border-top: 1px solid #dde4e8;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 10px;
+            border-top: 1px solid #e0f7fa;
+            background: #ffffff;
+            padding: 15px;
         }
         .chat-input input {
             flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ccd6dd;
-            border-radius: 8px;
+            padding: 14px 18px;
+            border: 1px solid #b2ebf2;
+            border-radius: 30px;
             font-size: 15px;
             outline: none;
             margin-right: 10px;
+            transition: border 0.3s ease;
+        }
+        .chat-input input:focus {
+            border-color: #0277bd;
+            box-shadow: 0 0 0 2px rgba(2, 119, 189, 0.1);
         }
         .chat-input button {
-            background: #005670;
+            background: linear-gradient(90deg, #0277bd 0%, #00838f 100%);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 30px;
             cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .chat-input button:active {
+            transform: translateY(0);
+        }
+        .welcome-message {
+            text-align: center;
+            color: #555;
+            padding: 30px;
+            font-size: 16px;
+        }
+        .welcome-icon {
+            font-size: 50px;
+            color: #0277bd;
+            margin-bottom: 20px;
+        }
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        .suggestion-chip {
+            background: #e1f5fe;
+            color: #0277bd;
+            border: 1px solid #b3e5fc;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .suggestion-chip:hover {
+            background: #b3e5fc;
+            transform: translateY(-2px);
+        }
+        /* Custom scrollbar */
+        .chatbox::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chatbox::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .chatbox::-webkit-scrollbar-thumb {
+            background: #b2ebf2;
+            border-radius: 10px;
+        }
+        .chatbox::-webkit-scrollbar-thumb:hover {
+            background: #80deea;
         }
     </style>
-
-    
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">MediBot - Your AI Health Assistant</div>
-        <div class="chatbox" id="chatbox"></div>
+        <div class="chat-header">
+            <i class="fas fa-robot"></i> MediBot - Your AI Health Assistant
+        </div>
+        <div class="chatbox" id="chatbox">
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h3>Welcome to MediBot!</h3>
+                <p>I'm your AI medical assistant, ready to help with health questions and concerns.</p>
+                <div class="suggestions">
+                    <div class="suggestion-chip" onclick="usesuggestion('What are symptoms of the flu?')">Flu symptoms</div>
+                    <div class="suggestion-chip" onclick="usesuggestion('How to reduce fever naturally?')">Reduce fever</div>
+                    <div class="suggestion-chip" onclick="usesuggestion('Common cold vs. allergies')">Cold vs. allergies</div>
+                </div>
+            </div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+            MediBot is typing<span>.</span><span>.</span><span>.</span>
+        </div>
         <div class="chat-input">
-            <input type="text" id="userInput" placeholder="Ask a medical question..." onkeypress="handleKeyPress(event)" />
-            <button onclick="sendMessage()">Send</button>
+            <input type="text" id="userInput" placeholder="Ask me a medical question..." onkeypress="handleKeyPress(event)"/>
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
         </div>
     </div>
 
     <script>
-        const NGROK_URL = "https://51d5-34-67-25-219.ngrok-free.app"; // Replace with actual ngrok URL
+        const NGROK_URL = "https://5435-210-89-61-37.ngrok-free.app"; 
 
         function handleKeyPress(event) {
             if (event.key === "Enter") {
                 sendMessage();
             }
+        }
+
+        function usesuggestion(text) {
+            document.getElementById("userInput").value = text;
+            sendMessage();
         }
 
         async function sendMessage() {
@@ -127,9 +250,16 @@
             }
 
             let chatbox = document.getElementById("chatbox");
+            if (document.querySelector('.welcome-message')) {
+                chatbox.innerHTML = ''; // Clear welcome message when first message is sent
+            }
+            
             chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
             document.getElementById("userInput").value = "";
             chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Show typing indicator
+            document.getElementById('typingIndicator').style.display = 'block';
 
             try {
                 let response = await fetch(`${NGROK_URL}/chat`, {
@@ -139,13 +269,17 @@
                 });
 
                 let result = await response.json();
-                let replyText = result.reply || "⚠️ Sorry, I couldn't generate a response.";
-
-            
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b><br>${marked.parse(replyText)}</div>`;
+                
+                // Hide typing indicator
+                document.getElementById('typingIndicator').style.display = 'none';
+                
+                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> ${result.reply}</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             } catch (error) {
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server.</div>`;
+                // Hide typing indicator
+                document.getElementById('typingIndicator').style.display = 'none';
+                
+                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server. Please try again later.</div>`;
                 chatbox.scrollTop = chatbox.scrollHeight;
             }
         }
