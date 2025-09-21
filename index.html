@@ -1,381 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediBot - Your AI Health Assistant</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            background: linear-gradient(120deg, #e0f7fa 0%, #b2ebf2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 550px;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 86, 112, 0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-        .chat-header {
-            background: linear-gradient(90deg, #0277bd 0%, #00838f 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .chatbox {
-            padding: 20px;
-            height: 400px;
-            overflow-y: auto;
-            background: #f8fdff;
-            display: flex;
-            flex-direction: column;
-            scroll-behavior: smooth;
-        }
-        .message {
-            margin: 10px 0;
-            padding: 14px 18px;
-            border-radius: 12px;
-            max-width: 85%;
-            font-size: 15px;
-            line-height: 1.5;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .user-message {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #007ea7 0%, #0091ad 100%);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        .bot-message {
-            align-self: flex-start;
-            background: #ffffff;
-            color: #333;
-            border: 1px solid #e0f7fa;
-            border-bottom-left-radius: 4px;
-        }
-        .bot-message b {
-            color: #0277bd;
-            display: block;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        .user-message b {
-            color: #e0f7fa;
-        }
-        .bot-message ul, .bot-message ol {
-            padding-left: 20px;
-            margin: 10px 0;
-        }
-        .bot-message li {
-            margin-bottom: 5px;
-        }
-        .bot-message p strong {
-            display: block;
-            color: #d32f2f;
-            margin-top: 12px;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-        .bot-message {
-            white-space: pre-line;
-        }
-        .bot-message p {
-            margin-bottom: 10px;
-        }
-        .bot-message-formatted ul {
-            list-style-type: disc;
-            padding-left: 20px;
-            margin: 10px 0;
-        }
-        .bot-message-formatted li {
-            margin-bottom: 5px;
-        }
-        .bot-message-formatted .warning-section {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #ffebee;
-            border-left: 4px solid #d32f2f;
-            border-radius: 4px;
-        }
-        .bot-message-formatted .warning-title {
-            color: #d32f2f;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .typing-indicator {
-            align-self: flex-start;
-            background: #ffffff;
-            color: #555;
-            font-size: 14px;
-            padding: 8px 16px;
-            border-radius: 12px;
-            border-bottom-left-radius: 4px;
-            margin: 10px 0;
-            display: none;
-        }
-        .typing-indicator span {
-            display: inline-block;
-            animation: blink 1.4s infinite both;
-        }
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        @keyframes blink {
-            0% { opacity: 0.2; }
-            20% { opacity: 1; }
-            100% { opacity: 0.2; }
-        }
-        .chat-input {
-            display: flex;
-            border-top: 1px solid #e0f7fa;
-            background: #ffffff;
-            padding: 15px;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 14px 18px;
-            border: 1px solid #b2ebf2;
-            border-radius: 30px;
-            font-size: 15px;
-            outline: none;
-            margin-right: 10px;
-            transition: border 0.3s ease;
-        }
-        .chat-input input:focus {
-            border-color: #0277bd;
-            box-shadow: 0 0 0 2px rgba(2, 119, 189, 0.1);
-        }
-        .chat-input button {
-            background: linear-gradient(90deg, #0277bd 0%, #00838f 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-        .chat-input button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .chat-input button:active {
-            transform: translateY(0);
-        }
-        .welcome-message {
-            text-align: center;
-            color: #555;
-            padding: 30px;
-            font-size: 16px;
-        }
-        .welcome-icon {
-            font-size: 50px;
-            color: #0277bd;
-            margin-bottom: 20px;
-        }
-        .suggestions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: center;
-        }
-        .suggestion-chip {
-            background: #e1f5fe;
-            color: #0277bd;
-            border: 1px solid #b3e5fc;
-            border-radius: 20px;
-            padding: 8px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .suggestion-chip:hover {
-            background: #b3e5fc;
-            transform: translateY(-2px);
-        }
-        .chatbox::-webkit-scrollbar {
-            width: 8px;
-        }
-        .chatbox::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .chatbox::-webkit-scrollbar-thumb {
-            background: #b2ebf2;
-            border-radius: 10px;
-        }
-        .chatbox::-webkit-scrollbar-thumb:hover {
-            background: #80deea;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediBot - Medical AI Assistant</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { 
+    font-family: 'Segoe UI', 'Arial', sans-serif; 
+    background: linear-gradient(120deg, #e0f7fa 0%, #b2ebf2 100%); 
+    min-height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 20px; 
+}
+
+.chat-container { 
+    width: 100%; 
+    max-width: 550px; 
+    background: #ffffff; 
+    border-radius: 16px; 
+    box-shadow: 0 8px 30px rgba(0,86,112,0.15); 
+    overflow: hidden; 
+    display:flex; 
+    flex-direction: column; 
+    transition: all 0.3s ease; 
+}
+
+.chat-header { 
+    background: linear-gradient(90deg, #0277bd 0%, #00838f 100%); 
+    color:white; 
+    padding:20px; 
+    text-align:center; 
+    font-size:24px; 
+    font-weight:600; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    gap:10px; 
+}
+
+.chatbox { 
+    padding:20px; 
+    height:500px; 
+    overflow-y:auto; 
+    background:#f8fdff; 
+    display:flex; 
+    flex-direction:column; 
+    scroll-behavior: smooth; 
+}
+
+.message { 
+    margin:10px 0; 
+    padding:14px 18px; 
+    border-radius:12px; 
+    max-width:85%; 
+    font-size:15px; 
+    line-height:1.5; 
+    position:relative; 
+    box-shadow:0 2px 5px rgba(0,0,0,0.05); 
+    animation:fadeIn 0.3s ease-in-out; 
+    white-space: pre-line; 
+}
+
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+.user-message { 
+    align-self:flex-end; 
+    background: linear-gradient(135deg,#007ea7 0%,#0091ad 100%); 
+    color:white; 
+    border-bottom-right-radius:4px; 
+}
+
+.bot-message { 
+    align-self:flex-start; 
+    background:#ffffff; 
+    color:#333; 
+    border:1px solid #e0f7fa; 
+    border-bottom-left-radius:4px; 
+}
+
+.bot-message b { 
+    color:#0277bd; 
+    display:block; 
+    margin-bottom:8px; 
+    font-size:16px; 
+}
+
+.bot-message ul, .bot-message ol { padding-left:20px; margin:10px 0; }
+.bot-message li { margin-bottom:5px; }
+
+.bot-message-formatted ul { list-style-type: disc; padding-left:20px; margin:10px 0; }
+.bot-message-formatted li { margin-bottom:5px; }
+
+.bot-message-formatted .warning-section { 
+    margin-top:15px; 
+    padding:10px; 
+    background-color:#ffebee; 
+    border-left:4px solid #d32f2f; 
+    border-radius:4px; 
+}
+
+.bot-message-formatted .warning-title { 
+    color:#d32f2f; 
+    font-weight:600; 
+    margin-bottom:5px; 
+}
+
+.typing-indicator { 
+    align-self:flex-start; 
+    background:#ffffff; 
+    color:#555; 
+    font-size:14px; 
+    padding:8px 16px; 
+    border-radius:12px; 
+    border-bottom-left-radius:4px; 
+    margin:10px 0; 
+    display:none; 
+}
+
+.typing-indicator span { 
+    display:inline-block; 
+    animation:blink 1.4s infinite both; 
+}
+
+.typing-indicator span:nth-child(2) { animation-delay:0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay:0.4s; }
+
+@keyframes blink { 0% { opacity:0.2; } 20% { opacity:1; } 100% { opacity:0.2; } }
+
+.chat-input { display:flex; border-top:1px solid #e0f7fa; background:#ffffff; padding:15px; }
+.chat-input input { 
+    flex:1; 
+    padding:14px 18px; 
+    border:1px solid #b2ebf2; 
+    border-radius:30px; 
+    font-size:15px; 
+    outline:none; 
+    margin-right:10px; 
+    transition:border 0.3s ease; 
+}
+
+.chat-input input:focus { 
+    border-color:#0277bd; 
+    box-shadow:0 0 0 2px rgba(2,119,189,0.1); 
+}
+
+.chat-input button { 
+    background: linear-gradient(90deg,#0277bd 0%,#00838f 100%); 
+    color:white; 
+    border:none; 
+    padding:12px 20px; 
+    border-radius:30px; 
+    cursor:pointer; 
+    font-weight:600; 
+    transition: all 0.2s ease; 
+}
+
+.chat-input button:hover { transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+.chat-input button:active { transform:translateY(0); }
+
+.welcome-message { text-align:center; color:#555; padding:30px; font-size:16px; }
+.welcome-icon { font-size:50px; color:#0277bd; margin-bottom:20px; }
+.suggestions { display:flex; flex-wrap:wrap; gap:10px; margin-top:15px; justify-content:center; }
+.suggestion-chip { 
+    background:#e1f5fe; 
+    color:#0277bd; 
+    border:1px solid #b3e5fc; 
+    border-radius:20px; 
+    padding:8px 15px; 
+    font-size:14px; 
+    cursor:pointer; 
+    transition:all 0.2s ease; 
+}
+
+.suggestion-chip:hover { background:#b3e5fc; transform:translateY(-2px); }
+
+.chatbox::-webkit-scrollbar { width:8px; }
+.chatbox::-webkit-scrollbar-track { background:#f1f1f1; }
+.chatbox::-webkit-scrollbar-thumb { background:#b2ebf2; border-radius:10px; }
+.chatbox::-webkit-scrollbar-thumb:hover { background:#80deea; }
+</style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <i class="fas fa-robot"></i> MediBot - Your AI Health Assistant
-        </div>
-        <div class="chatbox" id="chatbox">
-            <div class="welcome-message">
-                <div class="welcome-icon">
-                    <i class="fas fa-heartbeat"></i>
-                </div>
-                <h3>Welcome to MediBot!</h3>
-                <p>I'm your AI medical assistant, ready to help with health questions and concerns.</p>
-                <div class="suggestions">
-                    <div class="suggestion-chip" onclick="usesuggestion('What are symptoms of the flu?')">Flu symptoms</div>
-                    <div class="suggestion-chip" onclick="usesuggestion('How to reduce fever naturally?')">Reduce fever</div>
-                    <div class="suggestion-chip" onclick="usesuggestion('Common cold vs. allergies')">Cold vs. allergies</div>
-                </div>
+
+<div class="chat-container">
+
+    <div class="chat-header">
+        <i class="fas fa-robot"></i> MediBot
+    </div>
+
+    <div class="chatbox" id="chatbox">
+        <div class="welcome-message">
+            <div class="welcome-icon"><i class="fas fa-heartbeat"></i></div>
+            <h3>Welcome to MediBot!</h3>
+            <p>I'm your AI medical assistant, ready to help with health questions and concerns.</p>
+            <div class="suggestions">
+                <div class="suggestion-chip" onclick="usesuggestion('What are symptoms of the flu?')">Flu symptoms</div>
+                <div class="suggestion-chip" onclick="usesuggestion('How to reduce fever naturally?')">Reduce fever</div>
+                <div class="suggestion-chip" onclick="usesuggestion('Common cold vs. allergies')">Cold vs. allergies</div>
             </div>
-        </div>
-        <div class="typing-indicator" id="typingIndicator">
-            MediBot is typing<span>.</span><span>.</span><span>.</span>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="userInput" placeholder="Ask me a medical question..." onkeypress="handleKeyPress(event)"/>
-            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
-    <script>
-        const NGROK_URL = "https://7dce57589ef1.ngrok-free.app"; 
+    <div class="typing-indicator" id="typingIndicator">
+        MediBot is typing<span>.</span><span>.</span><span>.</span>
+    </div>
 
-        function handleKeyPress(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Ask me a medical question..." onkeypress="handleKeyPress(event)"/>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+
+<script>
+const NGROK_URL = "https://b53bb9cf6a7b.ngrok-free.app"; 
+const userId = "user123"; 
+let chatHistory = []; 
+const chatbox = document.getElementById("chatbox");
+
+function handleKeyPress(event){
+    if(event.key==="Enter"){ sendMessage(); }
+}
+
+function usesuggestion(text){
+    document.getElementById("userInput").value = text;
+    sendMessage();
+}
+
+async function sendMessage(){
+    let userMessage = document.getElementById("userInput").value.trim();
+    if(!userMessage){ alert("Please enter a question."); return; }
+
+    if(document.querySelector('.welcome-message')){ chatbox.innerHTML=''; }
+
+    chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
+    chatHistory.push({text:userMessage, sender:'user'});
+
+    document.getElementById("userInput").value="";
+    chatbox.scrollTop = chatbox.scrollHeight;
+    document.getElementById('typingIndicator').style.display='block';
+
+    try{
+        let response = await fetch(`${NGROK_URL}/chat`,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({message:userMessage, user_id:userId})
+        });
+
+        let result = await response.json();
+        document.getElementById('typingIndicator').style.display='none';
+
+        let reply = result.reply || "";
+
+        reply = reply.replace(/We've already discussed.*?\n/i,'');
+        reply = reply.replace(/\|\|\|\|/g,' | ');
+
+        let formattedReply = formatBotResponse(reply);
+
+        chatbox.innerHTML += `<div class="message bot-message bot-message-formatted"><b>MediBot:</b> ${formattedReply}</div>`;
+        chatHistory.push({text:formattedReply, sender:'bot'});
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    catch(error){
+        document.getElementById('typingIndicator').style.display='none';
+        chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to server. Please try again later.</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+}
+
+function formatBotResponse(text){
+    if(!text) return '';
+
+    text = text.replace(/^\s*[*\-]\s+/gm,'').replace(/\*\*/g,'').trim();
+    text = text.replace(/^(hello|hi|okay|i understand your concern|please|greetings|welcome)[.!]?\s*/i,'');
+
+    let lines = text.split(/\n+/);
+    let formatted = '', inList = false;
+
+    lines.forEach(line=>{
+        line = line.trim();
+        if(!line) return;
+
+        if(line.includes(':') && line.length<120){
+            if(!inList){ formatted += '<ul>'; inList=true; }
+            let parts = line.split(':');
+            formatted += `<li><b>${parts[0]}:</b> ${parts.slice(1).join(':').trim()}</li>`;
         }
-
-        function usesuggestion(text) {
-            document.getElementById("userInput").value = text;
-            sendMessage();
+        else if(/seek|consult|attention|warning|critical|important/i.test(line)){
+            if(inList){ formatted+='</ul>'; inList=false; }
+            formatted += `<div class="warning-section"><div class="warning-title">⚠️ Important:</div><p>${line}</p></div>`;
         }
-
-        async function sendMessage() {
-            let userMessage = document.getElementById("userInput").value.trim();
-            if (!userMessage) {
-                alert("Please enter a question.");
-                return;
-            }
-
-            let chatbox = document.getElementById("chatbox");
-            if (document.querySelector('.welcome-message')) {
-                chatbox.innerHTML = ''; 
-            }
-            
-            chatbox.innerHTML += `<div class="message user-message"><b>You:</b> ${userMessage}</div>`;
-            document.getElementById("userInput").value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            
-            document.getElementById('typingIndicator').style.display = 'block';
-
-            try {
-                let response = await fetch(`${NGROK_URL}/chat`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: userMessage })
-                });
-
-                let result = await response.json();
-                
-                document.getElementById('typingIndicator').style.display = 'none';
-                
-                let formattedReply = formatBotResponse(result.reply);
-                
-                chatbox.innerHTML += `<div class="message bot-message bot-message-formatted"><b>MediBot:</b> ${formattedReply}</div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            } catch (error) {
-                document.getElementById('typingIndicator').style.display = 'none';
-                
-                chatbox.innerHTML += `<div class="message bot-message"><b>MediBot:</b> Error connecting to the server. Please try again later.</div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            }
+        else if(/^(okay|thanks|thank you)$/i.test(line)){
+            if(inList){ formatted+='</ul>'; inList=false; }
+            formatted += `<p><i>${line.charAt(0).toUpperCase()+line.slice(1)}</i></p>`;
         }
-
-        function formatBotResponse(text) {
-            let formattedText = text;
-            
-            if (formattedText.includes('* ') || formattedText.includes('- ')) {
-                let lines = formattedText.split('\n');
-                let inList = false;
-                let result = '';
-                
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i].trim();
-                    
-                    if (line.startsWith('* ') || line.startsWith('- ')) {
-                        if (!inList) {
-                            result += '<ul>';
-                            inList = true;
-                        }
-                        
-                        result += '<li>' + line.substring(2) + '</li>';
-                    } 
-                    else if (line.toLowerCase().includes('seek') && (line.toLowerCase().includes('medical') || line.toLowerCase().includes('attention'))) {
-                        if (inList) {
-                            result += '</ul>';
-                            inList = false;
-                        }
-                        
-                        result += '<div class="warning-section"><div class="warning-title">' + line + '</div>';
-                    }
-                    else {
-                        if (inList) {
-                            result += '</ul>';
-                            inList = false;
-                        }
-                        
-                        if (line) {
-                            result += '<p>' + line + '</p>';
-                        }
-                    }
-                }
-                
-                if (inList) {
-                    result += '</ul>';
-                }
-                
-                if (result.includes('<div class="warning-section">') && !result.includes('</div></div>')) {
-                    result += '</div>';
-                }
-                
-                formattedText = result;
-            }
-            
-            return formattedText;
+        else {
+            if(inList){ formatted+='</ul>'; inList=false; }
+            formatted += `<p>${line}</p>`;
         }
-    </script>
+    });
+
+    if(inList) formatted += '</ul>';
+    return formatted;
+}
+</script>
 </body>
 </html>
-
